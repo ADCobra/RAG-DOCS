@@ -1,12 +1,20 @@
 [project]
-name = "genai"
+name = "rag-docs-genai"
 version = "0.1.0"
-description = "Add your description here"
+description = "RAG-DOCS - GenAI service for Retrieval-Augmented Generation"
 readme = "README.md"
 authors = [
-    { name = "ajitesh" },
+    { name = "Ajitesh", email = "bondlicensedtokillqueen@gmail.com" },
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi[standards]>=0.128.0",
+    "chromadb>=1.4.0",
+    "dotenv>=0.9.9",
+    "fastapi[standard]>=0.128.0",
+    "langchain-text-splitters>=1.1.0",
+    "langchain[google-genai]>=1.2.0",
+    "pdfplumber>=0.11.8",
+    "pinecone>=8.0.0",
+    "pymupdf>=1.26.7",
+    "uuid>=1.30",
 ]

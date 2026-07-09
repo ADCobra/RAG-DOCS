@@ -1,0 +1,35 @@
+import Link from "next/link";
+import React from "react";
+import { Button } from "./ui/button";
+
+function Navbar() {
+  return (
+    <nav className="bg-blue-50 border-b sticky top-0 left-0 w-full border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="flex gap-3 items-center w-full">
+        <div className="text-lg font-semibold text-gray-800">
+          RAG-DOCS
+        </div>
+        <div>
+          <Link
+            href="/"
+            className="text-gray-600 text-sm hover:text-gray-800 mx-2"
+          >
+            Home
+          </Link>
+        </div>
+      </div>
+      <div className="flex items-center space-x-4">
+        <Link href="/login">
+          <Button variant="outline" size={"sm"}>
+            Login
+          </Button>
+        </Link>
+        <Link href="/register">
+          <Button size={"sm"}>Register</Button>
+        </Link>
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;
