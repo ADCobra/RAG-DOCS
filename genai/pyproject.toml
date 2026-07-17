@@ -1,11 +1,9 @@
 [project]
-name = "rag-docs-genai"
+name = "genai"
 version = "0.1.0"
-description = "RAG-DOCS - GenAI service for Retrieval-Augmented Generation"
+description = "RAG-DOCS — Retrieval-Augmented Generation across multiple documents."
 readme = "README.md"
-authors = [
-    { name = "Ajitesh", email = "bondlicensedtokillqueen@gmail.com" },
-]
+authors = [{ name = "ajitesh", email = "bondlicensedtokillqueen@gmail.com" }]
 requires-python = ">=3.13"
 dependencies = [
     "chromadb>=1.4.0",

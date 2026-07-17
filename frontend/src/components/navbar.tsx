@@ -16,6 +16,18 @@ function Navbar() {
           >
             Home
           </Link>
+          <Link
+            href="/learn-more"
+            className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
+          >
+            Learn More
+          </Link>
+          <Link
+            href="/privacy"
+            className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
+          >
+            Privacy Policy
+          </Link>
         </div>
       </div>
       <div className="flex items-center space-x-4">

@@ -11,7 +11,9 @@ import NewChat from "@/components/chat/newChat";
 import Loader from "@/components/loader";
 
 function Page() {
-  const [slidebarOpen, setSidebarOpen] = useState(false);
+  const [slidebarOpen, setSidebarOpen] = useState(
+    typeof window !== "undefined" && window.innerWidth >= 768
+  );
 
   const dispatch = useDispatch<AppDispatch>();
   const { chat, error, chatCreated, message } = useSelector(

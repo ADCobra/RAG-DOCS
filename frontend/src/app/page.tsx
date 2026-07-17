@@ -18,7 +18,7 @@ export default function Home() {
             {/* Left Content */}
             <div className="space-y-6">
               <h1 className="text-5xl font-bold text-gray-900 leading-tight">
-                RAG-DOCS Intelligence with Memory
+                Multi-Document Intelligence with Memory
               </h1>
               <p className="text-xl text-gray-600">
                 Ask questions across multiple documents with conversational

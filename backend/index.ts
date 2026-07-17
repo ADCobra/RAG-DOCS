@@ -11,11 +11,13 @@ import messageRouter from "./routers/messageRouter";
 import errorMiddleware from './middlewares/error';
 import mongodb from './config/mongodb';
 import cookieParser from 'cookie-parser';
+import getGoogleClient from './config/googleClient';
 
 const app = express();
 
 dotenv.config({ path: path.resolve(path.join(__dirname, "./config/.env")) })
 mongodb();
+getGoogleClient();
 
 // Middleware
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));

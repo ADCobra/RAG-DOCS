@@ -104,7 +104,7 @@ function ChatSidebar({
   return (
     <aside
       className={`flex flex-col md:static z-10 fixed top-0 left-0 h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white border-r border-slate-700 transition-all duration-300 ${
-        open ? "w-64" : "xs:w-16 w-12"
+        open ? "w-64 md:w-80" : "xs:w-16 w-12"
       }`}
     >
       {/* Header */}

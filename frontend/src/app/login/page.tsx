@@ -1,5 +1,6 @@
 "use client";
 
+import GoogleButton from "@/components/googleButton";
 import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -121,9 +122,7 @@ function Page() {
                   </Field>
                   <Field>
                     <Button type="submit">Login</Button>
-                    <Button variant="outline" type="button">
-                      Login with Google
-                    </Button>
+                    <GoogleButton title="Login with Google" />
                     <FieldDescription className="text-center">
                       Don&apos;t have an account?{" "}
                       <Link href="/register">Sign up</Link>

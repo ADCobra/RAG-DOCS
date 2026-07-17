@@ -6,6 +6,9 @@ interface IUser {
   name: string;
   email: string;
   password: string;
+  provider: "local" | "google";
+  createdAt: Date;
+  updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -21,8 +24,13 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   password: {
     type: String,
-    required: true,
+    required: function() { return (this as any).provider === "local"; },
     select: false,
+  },
+  provider: {
+    type: String,
+    enum: ["local", "google"],
+    default: "local",
   },
 }, {
   timestamps: true,

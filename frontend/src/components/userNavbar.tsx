@@ -9,12 +9,24 @@ function UserNavbar() {
         <div className="text-lg font-semibold text-gray-800">
           RAG-DOCS
         </div>
-        <div>
+        <div className="flex gap-4 items-center ml-6">
           <Link
             href="/"
-            className="text-gray-600 text-sm hover:text-gray-800 mx-2"
+            className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
           >
             Home
+          </Link>
+          <Link
+            href="/learn-more"
+            className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
+          >
+            Learn More
+          </Link>
+          <Link
+            href="/privacy"
+            className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
+          >
+            Privacy Policy
           </Link>
         </div>
       </div>

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "RAG-DOCS",
   description:
-    "RAG-DOCS - Retrieval-Augmented Generation System, with language models.",
+    "RAG-DOCS — Retrieval-Augmented Generation across multiple documents, powered by language models.",
 };
 
 export default function RootLayout({

@@ -1,8 +1,4 @@
-# RAG-DOCS Frontend
-
-This is the frontend for the RAG-DOCS project — a Retrieval-Augmented Generation system built with [Next.js](https://nextjs.org).
-
-**Author:** Ajitesh (bondlicensedtokillqueen@gmail.com)
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 

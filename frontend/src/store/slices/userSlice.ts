@@ -42,6 +42,31 @@ const loadUserHandler = createAsyncThunk(
   }
 )
 
+const loginWithGoogleHandler = createAsyncThunk(
+  "user/loginWithGoogleHandler",
+  async ({ token }: { token: string }) => {
+    try {
+      const { data } = await axios.post("/user/google/login", { token });
+      return data;
+    } catch (error: unknown) {
+      return handleError(error);
+    }
+  }
+)
+
+const registerWithGoogleHandler = createAsyncThunk(
+  "user/registerWithGoogleHandler",
+  async ({ token }: { token: string }) => {
+    try {
+      const { data } = await axios.post("/user/google/register", { token });
+      return data;
+    } catch (error: unknown) {
+
+      return handleError(error);
+    }
+  }
+)
+
 interface initialState {
   user: UserState | null;
   loading: boolean;
@@ -124,10 +149,43 @@ const userSlice = createSlice({
         console.log(action)
         state.loading = false;
         state.error = action.error.message || "Something went wrong";
-      });
+      })
+
+      .addCase(loginWithGoogleHandler.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.login = false;
+      }
+      )
+      .addCase(loginWithGoogleHandler.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.login = true;
+      })
+      .addCase(loginWithGoogleHandler.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Something went wrong";
+      })
+
+
+      .addCase(registerWithGoogleHandler.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(registerWithGoogleHandler.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.success = true;
+      })
+      .addCase(registerWithGoogleHandler.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Something went wrong";
+      })
+
   },
 });
 
 export const { clearUserState, clearError, clearSuccess } = userSlice.actions;
-export { loginHandler, registerHandler, loadUserHandler };
+export { loginHandler, registerHandler, loadUserHandler, registerWithGoogleHandler, loginWithGoogleHandler };
 export default userSlice.reducer;

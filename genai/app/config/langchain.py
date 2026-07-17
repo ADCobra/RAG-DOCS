@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Optional, Dict
 from langchain.agents import create_agent
 from langchain.agents.middleware.types import ModelRequest, ModelResponse
 from langchain.chat_models import init_chat_model
@@ -8,6 +8,7 @@ from langchain.agents.middleware import AgentMiddleware
 from langchain_core.prompts import PromptTemplate
 from langgraph.checkpoint.memory import InMemorySaver
 from dataclasses import dataclass
+from datetime import datetime
 
 from dotenv import load_dotenv
 
@@ -24,20 +25,38 @@ Provide a concise and accurate answer.
 
 prompt_template = PromptTemplate.from_template(prompt)
 
+embeddings = None
+chat_model = None
+checkpointer = InMemorySaver()
 
-def get_embeddings():
-    return GoogleGenerativeAIEmbeddings(model="text-embedding-004")
+def get_chat_model():
+    global chat_model
+    if chat_model is not None:
+        return chat_model
+    chat_model = init_chat_model(
+        "google_genai:gemini-2.5-flash-lite", 
+        temperature=0.4,
+        max_tokens=1000,
+        timeout=30
+    )
+    return chat_model
 
+def get_embeddings() -> GoogleGenerativeAIEmbeddings:
+    global embeddings
+    if embeddings is not None:
+        return embeddings
+    embeddings = GoogleGenerativeAIEmbeddings(model="text-embedding-004")
+    return embeddings
 
-def sementic_search(chat_id: str, query: str, top_k: int = 3):
+def semantic_search(chat_id: str, query: str, top_k: int = 3):
     pc = get_pinecone_client()
-    index = pc.Index("genai-multidoc-rag")  
+    index = pc.Index("genai-rag-docs")
     embeddings = get_embeddings()
     query_embedding = embeddings.embed_query(query)
     search_results = index.query(
         vector=query_embedding,
         top_k=top_k,
-        namespace="rag-uploads",
+        namespace="rag-docs-uploads",
         filter={"chat_id": chat_id},
         include_metadata=True
     )
@@ -58,27 +77,22 @@ class CustomMiddleware(AgentMiddleware[Any, AgentContext]):
         chat_id = request.runtime.context.chat_id # type: ignore
 
         if message and chat_id:
-            result = sementic_search(chat_id, str(message), self.top_k)
+            result = semantic_search(chat_id, str(message), self.top_k)
             texts_content = "".join([f"{match['metadata']['page_content']}\n" for match in result['matches']]) # type: ignore
             augmented_message = prompt_template.format(response=texts_content, question=message)
-            request.messages[-1].content = augmented_message
+            new_messages = [{"role": "system", "content": augmented_message}] + request.messages
+            request.messages = new_messages # type: ignore
 
             self.retrived_docs = [{"file_name": r['metadata']['file_name'], "page": r['metadata'].get("page", 0)} for r in result['matches']]  # type: ignore
-
+        print(datetime.utcnow(), " - Sending request to model")
         return handler(request)
 
-def get_langchain_agent(middle: CustomMiddleware = CustomMiddleware(namespace="rag-uploads", top_k=3)):
-    model = init_chat_model(
-        "google_genai:gemini-2.5-flash-lite", 
-        temperature=0.4,
-        max_tokens=1000,
-        timeout=30
-    )
+def get_langchain_agent(middle: CustomMiddleware = CustomMiddleware(namespace="rag-docs-uploads", top_k=3)):
 
     agent = create_agent(
-        model=model, 
+        model=get_chat_model(), 
         middleware=[middle],
         context_schema=AgentContext,
-        checkpointer=InMemorySaver()
-      )
+        checkpointer=checkpointer
+    )
     return agent
