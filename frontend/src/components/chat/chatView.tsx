@@ -66,7 +66,7 @@ function ChatView() {
           <div className="flex items-center gap-2">
             <div className="text-2xl">💬</div>
             <span className="font-semibold text-gray-900 dark:text-white">
-              RAG-DOCS AI Chat
+              Multi-Docs AI Chat
             </span>
           </div>
 
@@ -76,7 +76,7 @@ function ChatView() {
               {chat.documents.map((doc) => (
                 <span
                   key={doc._id}
-                  className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-linear-to-r from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50"
+                  className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-linear-to-r from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50"
                 >
                   {doc.name}
                 </span>
@@ -92,7 +92,7 @@ function ChatView() {
         ref={(node) => {
           if (node) {
             const scrollElement = node.querySelector(
-              "[data-radix-scroll-area-viewport]"
+              "[data-radix-scroll-area-viewport]",
             );
             if (scrollElement) {
               scrollElement.scrollTop = scrollElement.scrollHeight;
@@ -130,14 +130,14 @@ function ChatView() {
                   }`}
                 >
                   {msg.role === "user" ? (
-                    <p className="text-sm leading-relaxed">{msg.content}</p>
+                    <p className="text-base leading-relaxed">{msg.content}</p>
                   ) : (
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
                         p: ({ ...props }) => (
                           <p
-                            className="text-sm leading-relaxed mb-2 last:mb-0"
+                            className="text-base leading-relaxed mb-2 last:mb-0"
                             {...props}
                           />
                         ),
@@ -154,17 +154,17 @@ function ChatView() {
                           />
                         ),
                         li: ({ ...props }) => (
-                          <li className="text-sm" {...props} />
+                          <li className="text-base" {...props} />
                         ),
                         code: ({ ...props }) => (
                           <code
-                            className="block bg-gray-900 dark:bg-black text-gray-100 p-3 rounded-lg text-xs font-mono overflow-x-auto mb-2"
+                            className="block bg-gray-900 dark:bg-black text-gray-100 p-3 rounded-lg text-sm font-mono overflow-x-auto mb-2"
                             {...props}
                           />
                         ),
                         blockquote: ({ ...props }) => (
                           <blockquote
-                            className="border-l-3 border-gray-400 dark:border-neutral-500 pl-3 italic text-sm mb-2 opacity-75"
+                            className="border-l-3 border-gray-400 dark:border-neutral-500 pl-3 italic text-base mb-2 opacity-75"
                             {...props}
                           />
                         ),
@@ -176,13 +176,13 @@ function ChatView() {
                         ),
                         h2: ({ ...props }) => (
                           <h2
-                            className="text-sm font-bold mb-2 mt-2"
+                            className="text-base font-bold mb-2 mt-2"
                             {...props}
                           />
                         ),
                         h3: ({ ...props }) => (
                           <h3
-                            className="text-xs font-bold mb-1 mt-1"
+                            className="text-sm font-bold mb-1 mt-1"
                             {...props}
                           />
                         ),
@@ -240,9 +240,9 @@ function ChatView() {
             <Send className="w-4 h-4" />
           </Button>
         </div>
-        <div className="max-w-4xl mx-auto text-xs text-gray-500 dark:text-gray-500 bg-amber-50/60 dark:bg-amber-900/10 rounded-lg p-2 border border-amber-100 dark:border-amber-800/20 min-h-fit">
+        <div className="max-w-4xl mx-auto text-sm text-gray-500 dark:text-gray-500 bg-amber-50/60 dark:bg-amber-900/10 rounded-lg p-2 border border-amber-100 dark:border-amber-800/20 min-h-fit">
           <p className="flex items-center gap-1.5">
-            <span className="text-sm shrink-0">⚠️</span>
+            <span className="text-base shrink-0">⚠️</span>
             <span className="line-clamp-1">
               AI may generate incorrect information. Verify critical details.
             </span>

@@ -3,6 +3,7 @@ from typing import List, Optional
 
 class AskQuestionRequest(BaseModel):
     chat_id: str
+    user_id: str
     question: str
 
 class AskQuestionResponse(BaseModel):

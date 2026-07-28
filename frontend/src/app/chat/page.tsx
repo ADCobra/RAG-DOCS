@@ -9,17 +9,17 @@ import { clearChatError, clearChatSuccess } from "@/store/slices/chatSlice";
 import ChatView from "@/components/chat/chatView";
 import NewChat from "@/components/chat/newChat";
 import Loader from "@/components/loader";
+import AuthProvider from "@/components/authProvider";
 
 function Page() {
   const [slidebarOpen, setSidebarOpen] = useState(
-    typeof window !== "undefined" && window.innerWidth >= 768
+    typeof window !== "undefined" && window.innerWidth >= 768,
   );
 
   const dispatch = useDispatch<AppDispatch>();
   const { chat, error, chatCreated, message } = useSelector(
-    (state: RootState) => state.chat
+    (state: RootState) => state.chat,
   );
-  const { user, loading } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     if (error) {
@@ -34,20 +34,16 @@ function Page() {
     }
   }, [error, chatCreated, message, dispatch]);
 
-  if (!user || loading) {
-    return <Loader />;
-  }
-
   return (
-    <>
-      <div className="flex h-screen w-full bg-white md:ml-0 ml-16 dark:bg-neutral-950">
+    <AuthProvider>
+      <div className="flex h-screen overflow-hidden w-full bg-white dark:bg-neutral-950">
         <ChatSidebar
           open={slidebarOpen}
           onToggle={() => setSidebarOpen(!slidebarOpen)}
         />
         {chat ? <ChatView /> : <NewChat />}
       </div>
-    </>
+    </AuthProvider>
   );
 }
 

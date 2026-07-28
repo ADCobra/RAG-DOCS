@@ -1,9 +1,9 @@
 [project]
-name = "genai"
+name = "rag-docs-genai"
 version = "0.1.0"
-description = "RAG-DOCS — Retrieval-Augmented Generation across multiple documents."
+description = "FastAPI service for RAG Docs — document processing and AI-powered Q&A with LangChain and Pinecone."
 readme = "README.md"
-authors = [{ name = "ajitesh", email = "bondlicensedtokillqueen@gmail.com" }]
+authors = [{ name = "Ajitesh", email = "bondlicensedtokillqueen@gmail.com" }]
 requires-python = ">=3.13"
 dependencies = [
     "chromadb>=1.4.0",
@@ -14,5 +14,6 @@ dependencies = [
     "pdfplumber>=0.11.8",
     "pinecone>=8.0.0",
     "pymupdf>=1.26.7",
+    "python-docx>=1.2.0",
     "uuid>=1.30",
 ]

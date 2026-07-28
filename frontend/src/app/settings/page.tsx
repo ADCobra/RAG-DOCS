@@ -1,10 +1,29 @@
 "use client";
 
 import AuthProvider from "@/components/authProvider";
+import { Button } from "@/components/ui/button";
 import UserNavbar from "@/components/userNavbar";
-import React from "react";
+import { deleteAllChatHandler } from "@/store/slices/chatSlice";
+import { AppDispatch, RootState } from "@/store/store";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 function Page() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error, message, chats } = useSelector(
+    (state: RootState) => state.chat,
+  );
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (message) {
+      toast.success(message);
+    }
+  }, [dispatch, message, error]);
+
   return (
     <AuthProvider>
       <UserNavbar />
@@ -17,9 +36,14 @@ function Page() {
         </div>
         <div className="mt-6">
           <h3 className="">Actions</h3>
-          <ul className="list-disc list-inside space-y-2 mt-2">
-            <li>Delete All Chats</li>
-          </ul>
+          <Button
+            variant="destructive"
+            className="mt-4"
+            disabled={loading || chats.length === 0}
+            onClick={() => dispatch(deleteAllChatHandler())}
+          >
+            Delete All Chats
+          </Button>
         </div>
       </div>
     </AuthProvider>

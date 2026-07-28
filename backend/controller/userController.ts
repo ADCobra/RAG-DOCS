@@ -83,10 +83,24 @@ const registerWithGoogle = expressAsyncHandler(async (req: Request, res: Respons
   const client = getGoogleClient();
   const { token } = req.body;
 
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
+  if (!token) {
+    return next(new ErrorHandler("Google token is required", 400));
+  }
+
+  if (!client) {
+    return next(new ErrorHandler("Google client not initialized", 500));
+  }
+
+  let ticket;
+  try {
+    ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+  } catch (error) {
+    console.log(error)
+    return next(new ErrorHandler("Invalid Google token", 400));
+  }
 
   const payload = ticket.getPayload();
   if (!payload) {
@@ -108,4 +122,15 @@ const registerWithGoogle = expressAsyncHandler(async (req: Request, res: Respons
   sendToken(res, user, 201);
 });
 
-export { registerUser, loginUser, loadUser, loginWithGoogle, registerWithGoogle };
+const logoutUser = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+});
+
+export { registerUser, loginUser, loadUser, loginWithGoogle, registerWithGoogle, logoutUser };

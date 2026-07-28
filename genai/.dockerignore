@@ -1,0 +1,39 @@
+# --- Security (CRITICAL) ---
+.env
+.env.local
+.env.*
+secrets.json
+*.pem
+*.key
+
+# --- Python & Cache (Save Space) ---
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- UV & Tooling ---
+# We ignore the local .venv created by uv because we rebuild it inside Docker
+.venv
+.uv
+
+# --- Git & IDEs (Save Space) ---
+.git
+.gitignore
+.dockerignore
+.vscode
+.idea
+*.swp
+
+# --- Local Data & Logs ---
+logs/
+tmp/
+# If you have large local datasets you don't need in the image, list them here:
+# data/
+# models/large-model.bin

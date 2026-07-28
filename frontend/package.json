@@ -1,8 +1,8 @@
 {
-  "name": "frontend",
+  "name": "rag-docs-frontend",
   "version": "0.1.0",
   "private": true,
-  "author": "ajitesh <bondlicensedtokillqueen@gmail.com>",
+  "author": "Ajitesh <bondlicensedtokillqueen@gmail.com>",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -6,7 +6,7 @@ from app.scheama.ask_question import AskQuestionRequest
 async def ask_question_service(request: AskQuestionRequest):
     time = datetime.utcnow()
     print(time)
-    middleware = CustomMiddleware(namespace="rag-docs-uploads", top_k=3)
+    middleware = CustomMiddleware(namespace="rag-uploads", top_k=3)
     agent = get_langchain_agent(middle=middleware)
     response = agent.invoke(
         {

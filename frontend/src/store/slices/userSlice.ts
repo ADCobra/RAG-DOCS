@@ -67,6 +67,18 @@ const registerWithGoogleHandler = createAsyncThunk(
   }
 )
 
+const logoutHandler = createAsyncThunk(
+  "user/logoutHandler",
+  async () => {
+    try {
+      const { data } = await axios.put("/user/logout");
+      return data;
+    } catch (error: unknown) {
+      return handleError(error);
+    }
+  }
+)
+
 interface initialState {
   user: UserState | null;
   loading: boolean;
@@ -142,13 +154,10 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(loadUserHandler.fulfilled, (state, action) => {
-        console.log(action)
         state.loading = false;
         state.user = action.payload.user;
-      }).addCase(loadUserHandler.rejected, (state, action) => {
-        console.log(action)
+      }).addCase(loadUserHandler.rejected, (state) => {
         state.loading = false;
-        state.error = action.error.message || "Something went wrong";
       })
 
       .addCase(loginWithGoogleHandler.pending, (state) => {
@@ -183,9 +192,24 @@ const userSlice = createSlice({
         state.error = action.error.message || "Something went wrong";
       })
 
+      .addCase(logoutHandler.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutHandler.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.login = false;
+      })
+      .addCase(logoutHandler.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Something went wrong";
+      });
+
+
   },
 });
 
 export const { clearUserState, clearError, clearSuccess } = userSlice.actions;
-export { loginHandler, registerHandler, loadUserHandler, registerWithGoogleHandler, loginWithGoogleHandler };
+export { loginHandler, registerHandler, loadUserHandler, registerWithGoogleHandler, loginWithGoogleHandler, logoutHandler };
 export default userSlice.reducer;

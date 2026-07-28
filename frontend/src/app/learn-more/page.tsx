@@ -167,8 +167,7 @@ function LearnPage() {
               Learn How to Use
             </h1>
             <p className="text-xl text-muted-foreground">
-              Master our RAG-DOCS Application with these guides and
-              tutorials
+              Master RAG Docs with these guides and tutorials
             </p>
           </div>
 

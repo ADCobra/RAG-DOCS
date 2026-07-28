@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  rag-docs-backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+
+    image: rag-docs-backend:latest
+    container_name: rag-docs-backend
+    restart: always
+    environment:
+      - PORT=5000
+
+    ports:
+      - "${PORT}:${PORT}"
+
+    networks:
+      - web-net
+
+  rag-docs-frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+
+    image: rag-docs-frontend:latest
+    container_name: rag-docs-frontend
+
+    restart: always
+    environment:
+      - PORT=3000
+
+    ports:
+      - "${PORT}:${PORT}"
+
+    networks:
+      - web-net
+
+  rag-docs-genai:
+    build:
+      context: .
+      dockerfile: genai/dockerfile
+    image: rag-docs-genai:latest
+    container_name: rag-docs-genai
+    restart: always
+    environment:
+      - PORT=8000
+
+    ports:
+      - "${PORT}:${PORT}"
+
+    networks:
+      - web-net
+
+networks:
+  web-net:
+    external: true

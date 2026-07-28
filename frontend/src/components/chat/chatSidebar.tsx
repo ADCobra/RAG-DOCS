@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { Ellipsis, Home, Menu, Settings, X } from "lucide-react";
+import { Ellipsis, Home, Menu, Settings, X, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -43,6 +43,8 @@ import {
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { logoutHandler } from "@/store/slices/userSlice";
 
 function ChatSidebar({
   open,
@@ -58,6 +60,10 @@ function ChatSidebar({
 
   const dispatch = useDispatch<AppDispatch>();
   const { chats } = useSelector((state: RootState) => state.chat);
+  const { user, message, error, loading } = useSelector(
+    (state: RootState) => state.user,
+  );
+  const router = useRouter();
 
   const deleteChatDialog = (chat: chat) => {
     setDialogChat(chat);
@@ -90,7 +96,7 @@ function ChatSidebar({
     }
 
     dispatch(
-      changeChatNameHandler({ chatId: dialogChat._id, newName: chatName })
+      changeChatNameHandler({ chatId: dialogChat._id, newName: chatName }),
     );
     setDialogChat(null);
     setNameChange(false);
@@ -101,10 +107,25 @@ function ChatSidebar({
     dispatch(fetchAllChatsHandler());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (message) {
+      toast.success(message);
+    }
+  }, [error, message]);
+
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
   return (
     <aside
-      className={`flex flex-col md:static z-10 fixed top-0 left-0 h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white border-r border-slate-700 transition-all duration-300 ${
-        open ? "w-64 md:w-80" : "xs:w-16 w-12"
+      className={`flex flex-col h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white border-r border-slate-700 transition-all duration-300 ${
+        open ? "w-72 md:w-96" : "xs:w-20 w-16"
       }`}
     >
       {/* Header */}
@@ -123,7 +144,7 @@ function ChatSidebar({
                 variant="ghost"
                 className="w-full p-2 justify-center text-slate-400 hover:text-white hover:bg-slate-700"
               >
-                <Home className="w-4 h-4" />
+                <Home className="w-6 h-6" />
               </Button>
             </Link>
           )}
@@ -142,7 +163,7 @@ function ChatSidebar({
         <div className="p-4 pb-3">
           <Button
             onClick={() => dispatch(clearChatState()) && onToggle()}
-            className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all rounded-lg py-2 font-semibold shadow-lg text-sm"
+            className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all rounded-lg py-2 font-semibold shadow-lg text-base"
           >
             ✨ New Chat
           </Button>
@@ -159,7 +180,7 @@ function ChatSidebar({
           }}
         >
           <div>
-            {/* <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest px-2 mb-2">
+            {/* <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest px-2 mb-2">
                 {section.title}
               </h3> */}
             <ul className="space-y-1.5">
@@ -171,7 +192,7 @@ function ChatSidebar({
                     onToggle();
                   }}
                 >
-                  <div className="w-full flex items-center justify-between text-left px-3 py-2 rounded-md text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-200 truncate group relative">
+                  <div className="w-full flex items-center justify-between text-left px-3 py-2 rounded-md text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-200 truncate group relative">
                     <div className="group-hover:pr-4 flex-1 truncate cursor-pointer">
                       {chat.title}
                     </div>
@@ -185,7 +206,7 @@ function ChatSidebar({
                             variant="ghost"
                             className="p-1 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full"
                           >
-                            <Ellipsis className="w-4 h-4" />
+                            <Ellipsis className="w-6 h-6" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
@@ -196,13 +217,13 @@ function ChatSidebar({
                                 setDialogChat(chat);
                                 setChatName(chat.title);
                               }}
-                              className="text-xs"
+                              className="text-sm"
                             >
                               Change Name
                             </DropdownMenuLabel>
                             <DropdownMenuLabel
                               onClick={() => deleteChatDialog(chat)}
-                              className="text-xs"
+                              className="text-sm text-red-600"
                             >
                               Delete Chat
                             </DropdownMenuLabel>
@@ -215,7 +236,7 @@ function ChatSidebar({
               ))}
               {chats.length === 0 && (
                 <li>
-                  <p className="text-xs text-slate-400 italic px-2">
+                  <p className="text-sm text-slate-400 italic px-2">
                     No chats available. Start a new chat!
                   </p>
                 </li>
@@ -225,13 +246,16 @@ function ChatSidebar({
         </nav>
       )}
 
-      {deleteDialogOpen && (
+      {deleteDialogOpen && dialogChat && (
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                {`This action cannot be undone. This will permanently delete the chat "${dialogChat?.title}" and remove its data from our servers.`}
+                This action cannot be undone. This will permanently delete the
+                chat{" "}
+                <b className="text-black">&quot;{dialogChat?.title}&quot;</b>{" "}
+                and remove its data from our servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -247,31 +271,29 @@ function ChatSidebar({
       {nameChange && (
         <Dialog open={nameChange} onOpenChange={setNameChange}>
           <DialogContent className="sm:max-w-md bg-slate-800 border border-slate-700">
+            <DialogHeader className="gap-1 pb-1">
+              <DialogTitle className="text-white">Rename Chat</DialogTitle>
+              <DialogDescription className="text-slate-400 -mt-1">
+                Enter a new name for your chat. Click save when you&apos;re
+                done.
+              </DialogDescription>
+            </DialogHeader>
             <form onSubmit={nameChangeHandler}>
-              <DialogHeader>
-                <DialogTitle className="text-white">Rename Chat</DialogTitle>
-                <DialogDescription className="text-slate-400">
-                  Enter a new name for your chat. Click save when you&apos;re
-                  done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4">
-                <div className="grid gap-3">
-                  <Label htmlFor="chat-name" className="text-slate-300">
-                    Chat Name
-                  </Label>
-                  <Input
-                    id="chat-name"
-                    name="chatName"
-                    value={chatName}
-                    onChange={(e) => setChatName(e.target.value)}
-                    placeholder="Enter new chat name"
-                    className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
-                    required
-                  />
-                </div>
+              <div className="grid gap-3">
+                <Label htmlFor="chat-name" className="text-slate-300">
+                  Chat Name
+                </Label>
+                <Input
+                  id="chat-name"
+                  name="chatName"
+                  value={chatName}
+                  onChange={(e) => setChatName(e.target.value)}
+                  placeholder="Enter new chat name"
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
+                  required
+                />
               </div>
-              <DialogFooter>
+              <DialogFooter className="mt-6">
                 <DialogClose asChild>
                   <Button
                     variant="outline"
@@ -297,37 +319,57 @@ function ChatSidebar({
       >
         {open ? (
           <>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-xs text-slate-400 hover:text-white hover:bg-slate-700"
-            >
-              <Settings className="w-4 h-4 mr-2" /> Settings
-            </Button>
+            <Link href="/settings">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm text-slate-400 hover:text-white hover:bg-slate-700"
+              >
+                <Settings className="w-6 h-6 mr-2" /> Settings
+              </Button>
+            </Link>
             <Link href="/">
               <Button
                 variant="ghost"
-                className="w-full justify-start text-xs text-slate-400 hover:text-white hover:bg-slate-700"
+                className="w-full justify-start text-sm text-slate-400 hover:text-white hover:bg-slate-700"
               >
-                <Home className="w-4 h-4 mr-2" /> Home
+                <Home className="w-6 h-6 mr-2" /> Home
               </Button>
             </Link>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-sm text-slate-400 hover:text-white hover:bg-slate-700"
+              onClick={() => dispatch(logoutHandler())}
+              disabled={loading}
+            >
+              <LogOut className="w-6 h-6 mr-2" /> Logout
+            </Button>
           </>
         ) : (
           <>
-            <Button
-              variant="ghost"
-              className="w-full p-2 justify-center text-slate-400 hover:text-white hover:bg-slate-700"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
+            <Link href="/settings">
+              <Button
+                variant="ghost"
+                className="w-full p-2 justify-center text-slate-400 hover:text-white hover:bg-slate-700"
+              >
+                <Settings className="w-6 h-6" />
+              </Button>
+            </Link>
             <Link href="/">
               <Button
                 variant="ghost"
                 className="w-full p-2 justify-center text-slate-400 hover:text-white hover:bg-slate-700"
               >
-                <Home className="w-4 h-4" />
+                <Home className="w-6 h-6" />
               </Button>
             </Link>
+            <Button
+              variant="ghost"
+              className="p-2 justify-center text-slate-400 hover:text-white hover:bg-slate-700"
+              onClick={() => dispatch(logoutHandler())}
+              disabled={loading}
+            >
+              <LogOut className="w-6 h-6" />
+            </Button>
           </>
         )}
       </div>

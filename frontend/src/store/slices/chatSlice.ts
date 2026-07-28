@@ -72,6 +72,19 @@ const changeChatNameHandler = createAsyncThunk(
   }
 )
 
+const deleteAllChatHandler = createAsyncThunk(
+  "chat/deleteAllChatHandler",
+  async () => {
+    try {
+      const { data } = await axios.put(`/chat/delete-all`);
+      return data;
+    }
+    catch (error: unknown) {
+      return handleError(error);
+    }
+  }
+)
+
 interface ChatState {
   chats: chat[];
   loading: boolean;
@@ -190,10 +203,26 @@ const chatSlice = createSlice({
       .addCase(changeChatNameHandler.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+
+
+      .addCase(deleteAllChatHandler.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAllChatHandler.fulfilled, (state, action) => {
+        state.loading = false;
+        state.chats = [];
+        state.chat = null;
+        state.chatMessages = [];
+      })
+      .addCase(deleteAllChatHandler.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   }
 });
 
 export const { clearChatError, clearChatSuccess, clearChatState, addMessageToChat } = chatSlice.actions;
-export { createChatHandler, fetchAllChatsHandler, fetchChatByIdHandler, deleteChatHandler, changeChatNameHandler };
+export { createChatHandler, fetchAllChatsHandler, fetchChatByIdHandler, deleteChatHandler, changeChatNameHandler, deleteAllChatHandler };
 export default chatSlice.reducer;

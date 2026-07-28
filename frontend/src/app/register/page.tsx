@@ -2,6 +2,7 @@
 
 import GoogleButton from "@/components/googleButton";
 import Loader from "@/components/loader";
+import Navbar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,7 +38,7 @@ function Page() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { user, loading, error, success, message } = useSelector(
-    (state: RootState) => state.user
+    (state: RootState) => state.user,
   );
 
   const submitHandler = (e: React.FormEvent) => {
@@ -82,74 +83,78 @@ function Page() {
   }
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className={"flex flex-col gap-6"}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Register your account</CardTitle>
-              <CardDescription>
-                Enter your email below to register your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={submitHandler}>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="name">Name</FieldLabel>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Your full name"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
-                    <FieldDescription>
-                      Please confirm your password.
-                    </FieldDescription>
-                  </Field>
-                  <Field>
-                    <Button type="submit">Register</Button>
-                    <GoogleButton title="Register with Google" />
-                    <FieldDescription className="text-center">
-                      Already have an account? <Link href="/login">Login</Link>
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-              </form>
-            </CardContent>
-          </Card>
+    <>
+      <Navbar />
+      <div className="flex min-h-svh w-full items-center justify-center p-3 xs:p-6 md:p-10">
+        <div className="w-full max-w-sm">
+          <div className={"flex flex-col gap-6"}>
+            <Card>
+              <CardHeader className="md:px-6 px-4">
+                <CardTitle>Register your account</CardTitle>
+                <CardDescription>
+                  Enter your email below to register your account
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="md:px-6 px-4">
+                <form onSubmit={submitHandler}>
+                  <FieldGroup className="gap-3">
+                    <Field>
+                      <FieldLabel htmlFor="name">Name</FieldLabel>
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Your full name"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="email">Email</FieldLabel>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <Input
+                        id="password"
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="confirm-password">
+                        Confirm Password
+                      </FieldLabel>
+                      <Input id="confirm-password" type="password" required />
+                      <FieldDescription>
+                        Please confirm your password.
+                      </FieldDescription>
+                    </Field>
+                    <Field>
+                      <Button type="submit">Register</Button>
+                      <GoogleButton title="Register with Google" />
+                      <FieldDescription className="text-center">
+                        Already have an account?{" "}
+                        <Link href="/login">Login</Link>
+                      </FieldDescription>
+                    </Field>
+                  </FieldGroup>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

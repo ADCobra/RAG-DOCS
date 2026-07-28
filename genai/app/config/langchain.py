@@ -25,7 +25,6 @@ Provide a concise and accurate answer.
 
 prompt_template = PromptTemplate.from_template(prompt)
 
-embeddings = None
 chat_model = None
 checkpointer = InMemorySaver()
 
@@ -41,22 +40,18 @@ def get_chat_model():
     )
     return chat_model
 
-def get_embeddings() -> GoogleGenerativeAIEmbeddings:
-    global embeddings
-    if embeddings is not None:
-        return embeddings
-    embeddings = GoogleGenerativeAIEmbeddings(model="text-embedding-004")
-    return embeddings
-
 def semantic_search(chat_id: str, query: str, top_k: int = 3):
     pc = get_pinecone_client()
     index = pc.Index("genai-rag-docs")
-    embeddings = get_embeddings()
-    query_embedding = embeddings.embed_query(query)
+    query_embedding = pc.inference.embed(
+        model="multilingual-e5-large",
+        inputs=[query],
+        parameters={"input_type": "passage", "truncate": "END"}
+    )
     search_results = index.query(
-        vector=query_embedding,
+        vector=query_embedding[0]['values'],
         top_k=top_k,
-        namespace="rag-docs-uploads",
+        namespace="rag-uploads",
         filter={"chat_id": chat_id},
         include_metadata=True
     )
@@ -87,7 +82,7 @@ class CustomMiddleware(AgentMiddleware[Any, AgentContext]):
         print(datetime.utcnow(), " - Sending request to model")
         return handler(request)
 
-def get_langchain_agent(middle: CustomMiddleware = CustomMiddleware(namespace="rag-docs-uploads", top_k=3)):
+def get_langchain_agent(middle: CustomMiddleware = CustomMiddleware(namespace="rag-uploads", top_k=3)):
 
     agent = create_agent(
         model=get_chat_model(), 

@@ -1,13 +1,13 @@
 {
-  "name": "backend",
+  "name": "rag-docs-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express API for RAG Docs — auth, chats, messages, and document handling.",
   "main": "index.ts",
   "scripts": {
     "start": "nodemon index.ts"
   },
   "keywords": [],
-  "author": "ajitesh <bondlicensedtokillqueen@gmail.com>",
+  "author": "Ajitesh <bondlicensedtokillqueen@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
