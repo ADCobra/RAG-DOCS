@@ -1,3 +1,4 @@
+import os
 from collections.abc import Callable
 from typing import Any, Optional, Dict
 from langchain.agents import create_agent
@@ -32,8 +33,12 @@ def get_chat_model():
     global chat_model
     if chat_model is not None:
         return chat_model
+    # gemini-2.5-flash-lite is closed to new API keys and returns 404 NOT_FOUND
+    # for them. Overridable so the next deprecation is a config change, not a
+    # code change.
+    model = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
     chat_model = init_chat_model(
-        "google_genai:gemini-2.5-flash-lite", 
+        f"google_genai:{model}",
         temperature=0.4,
         max_tokens=1000,
         timeout=30

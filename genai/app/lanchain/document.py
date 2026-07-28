@@ -20,6 +20,11 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20
 pc = get_pinecone_client()
 index = pc.Index("genai-rag-docs")
 
+# Must match the genai-rag-docs index, which multilingual-e5-large sizes at 1024.
+# The deletion queries below send a zero vector purely to satisfy the API, but a
+# mismatched length is still rejected with a 400.
+INDEX_DIMENSION = 1024
+
 async def upload_pdf(chat_id: str, user_id: str, file: UploadFile = File(...)):
   full_text = ""
   page_texts = []
@@ -111,7 +116,7 @@ async def upload_docx(chat_id: str, user_id: str, file: UploadFile = File(...)):
 async def delete_chat_files(chat_id: str):
   query_response = index.query(
     namespace="rag-uploads",
-    vector=[0.0] * 768,
+    vector=[0.0] * INDEX_DIMENSION,
     filter={"chat_id": chat_id},
     top_k=1000
   )
@@ -125,7 +130,7 @@ async def delete_chat_files(chat_id: str):
 async def delete_user_docs(user_id: str):
   query_response = index.query(
     namespace="rag-uploads",
-    vector=[0.0]*768,
+    vector=[0.0] * INDEX_DIMENSION,
     filter={"user_id": user_id},
     top_k=1000
   )
