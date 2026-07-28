@@ -13,7 +13,8 @@ const errorMiddleware = (
   res.status(err.statusCode).json({
     success: false,
     message: err.message,
-    stack: err.stack,
+    // Stack traces expose source paths and internals, so keep them out of production responses.
+    ...(process.env.NODE_ENV === "production" ? {} : { stack: err.stack }),
   });
 };
 

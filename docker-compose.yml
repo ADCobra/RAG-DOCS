@@ -1,57 +1,79 @@
-version: "3.8"
-
 services:
+  mongo:
+    image: mongo:8
+    container_name: rag-docs-mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - web-net
+
   rag-docs-backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
-
+      # Context is the service directory: the Dockerfile copies package*.json
+      # from the build root, and there is no package.json at the repo root.
+      context: ./backend
+      dockerfile: Dockerfile
     image: rag-docs-backend:latest
     container_name: rag-docs-backend
     restart: always
     environment:
       - PORT=5000
-
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongo:27017/rag-docs
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:3000}
+      - FASTAPI_URL=http://rag-docs-genai:8000
+      - FASTAPI_KEY=${FASTAPI_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7}
+      - COOKIE_EXPIRES_IN=${COOKIE_EXPIRES_IN:-7}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     ports:
-      - "${PORT}:${PORT}"
-
+      - "5000:5000"
+    depends_on:
+      - mongo
     networks:
       - web-net
 
   rag-docs-frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
-
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5000}
+        - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     image: rag-docs-frontend:latest
     container_name: rag-docs-frontend
-
     restart: always
     environment:
       - PORT=3000
-
     ports:
-      - "${PORT}:${PORT}"
-
+      - "3000:3000"
+    depends_on:
+      - rag-docs-backend
     networks:
       - web-net
 
   rag-docs-genai:
     build:
-      context: .
-      dockerfile: genai/dockerfile
+      context: ./genai
+      dockerfile: Dockerfile
     image: rag-docs-genai:latest
     container_name: rag-docs-genai
     restart: always
     environment:
       - PORT=8000
-
+      - API_TOKEN=${FASTAPI_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     ports:
-      - "${PORT}:${PORT}"
-
+      - "8000:8000"
     networks:
       - web-net
 
 networks:
   web-net:
-    external: true
+    driver: bridge
+
+volumes:
+  mongo-data:

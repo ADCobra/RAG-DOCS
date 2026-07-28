@@ -1,4 +1,5 @@
-FROM python:3.12-slim
+# pyproject.toml declares requires-python >=3.13, so a 3.12 base fails at `uv sync`.
+FROM python:3.13-slim
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
@@ -19,6 +20,7 @@ ENV PORT=8000
 
 COPY . .
 
-EXPOSE $PORT
+EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", $PORT]
+# Shell form so ${PORT} expands at runtime; the app lives at app/main.py, not main.py.
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT}

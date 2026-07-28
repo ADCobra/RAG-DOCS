@@ -3,16 +3,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN chown -R node:node /app
-
+# Install every dependency: index.ts is executed through ts-node at runtime, so
+# TypeScript and ts-node (both devDependencies) must be present in the image.
 COPY package*.json ./
+RUN npm ci && npm cache clean --force
+
+COPY . .
+
+RUN chown -R node:node /app
 USER node
-RUN npm ci --only=production && npm cache clean --force
 
 ENV PORT=5000
+ENV NODE_ENV=production
 
-COPY --chown=node:node . .
+EXPOSE 5000
 
-EXPOSE $PORT
-
-CMD ["npx","tsx", "index.ts"]
+CMD ["npx", "ts-node", "index.ts"]

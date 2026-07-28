@@ -1,0 +1,51 @@
+# Render Blueprint. In the Render dashboard: New > Blueprint > pick this repo.
+# Every var below with `sync: false` must be filled in by hand -- Render will
+# prompt for them. The services will not boot until they are set.
+services:
+  - type: web
+    name: rag-docs-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/v1/user/me
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # MongoDB Atlas SRV string. The backend calls process.exit(1) when this is
+      # missing or unreachable, so a bad value shows up as a boot loop.
+      - key: MONGO_URL
+        sync: false
+      # Public Vercel URL of the frontend, e.g. https://rag-docs.vercel.app
+      # No trailing slash -- it is matched against the browser Origin header.
+      - key: CLIENT_URL
+        sync: false
+      # Internal URL of the genai service below, e.g. https://rag-docs-genai.onrender.com
+      - key: FASTAPI_URL
+        sync: false
+      - key: FASTAPI_KEY
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7
+      - key: COOKIE_EXPIRES_IN
+        value: 7
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+
+  - type: web
+    name: rag-docs-genai
+    runtime: docker
+    dockerfilePath: ./genai/Dockerfile
+    dockerContext: ./genai
+    plan: free
+    envVars:
+      # Must match FASTAPI_KEY on the backend service above.
+      - key: API_TOKEN
+        sync: false
+      # Without a valid key this service fails at import and never serves traffic.
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false

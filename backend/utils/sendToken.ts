@@ -7,10 +7,14 @@ const sendToken = async (res: Response, user: IUser, statusCode: number) => {
     expiresIn: Number(process.env.JWT_EXPIRES_IN) * 24 * 60 * 60,
   });
 
+  // In production the frontend and API sit on different domains, so the cookie
+  // must be SameSite=None (which browsers only accept alongside Secure).
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.status(statusCode).cookie("token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: Number(process.env.COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000,
   }).json({
     success: true,
