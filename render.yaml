@@ -8,7 +8,9 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
-    healthCheckPath: /api/v1/user/me
+    # No healthCheckPath: the app has no unauthenticated 2xx route (every path
+    # either 401s or 404s), and Render fails a deploy whose health check is
+    # non-2xx. Without it Render just verifies the port is bound.
     envVars:
       - key: NODE_ENV
         value: production
@@ -49,3 +51,7 @@ services:
         sync: false
       - key: GOOGLE_API_KEY
         sync: false
+      # New Google API keys get 404 on the whole gemini-2.x line. Pin an
+      # available model here to change it without a code edit.
+      - key: GEMINI_MODEL
+        value: gemini-3.1-flash-lite
